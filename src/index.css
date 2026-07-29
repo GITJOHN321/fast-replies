@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #0a0a0a;
+  --color-card: #141414;
+  --color-border: #262626;
+  --color-text: #f5f5f5;
+  --color-text-muted: #a3a3a3;
+  --color-text-dim: #525252;
+  --color-accent: #6366f1;
+  --color-accent-hover: #4f46e5;
+}
+
+@layer components {
+  .input-field {
+    @apply w-full px-3 py-2 bg-card border border-border rounded-md text-text
+           placeholder-text-dim transition-colors
+           focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent;
+  }
+  .input-label {
+    @apply block text-sm font-medium text-text-muted mb-1.5;
+  }
+  .input-error {
+    @apply mt-1 text-sm text-red-400;
+  }
+  .checkbox-wrapper {
+    @apply inline-flex items-center gap-2 cursor-pointer select-none;
+  }
+  .checkbox-input {
+    @apply w-4 h-4 rounded border-border bg-card text-accent accent-accent cursor-pointer
+           focus:ring-2 focus:ring-accent focus:ring-offset-0;
+  }
+  .checkbox-text {
+    @apply text-sm text-text-muted;
+  }
+  .btn-primary {
+    @apply w-full py-2 px-4 bg-accent hover:bg-accent-hover text-white font-medium
+           rounded-md transition-colors cursor-pointer;
+  }
+  .btn-danger {
+    @apply py-2 px-4 bg-red-400/20 hover:bg-red-400/30 text-red-400 font-medium
+           rounded-md transition-colors cursor-pointer border border-red-400/30;
+  }
+  .page-title {
+    @apply text-2xl font-semibold text-text mb-8;
+  }
+  .form-card {
+    @apply bg-card border border-border rounded-lg p-6 shadow-lg shadow-black/30;
+  }
+  .page-wrapper {
+    @apply min-h-screen flex items-start justify-center pt-16 px-4;
+  }
+  .sidebar {
+    @apply fixed top-0 left-0 h-full w-48 bg-card border-r border-border transition-transform duration-300 z-50;
+  }
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-2.5 text-sm text-text-muted rounded-md transition-colors;
+  }
+  .sidebar-link-active {
+    @apply text-accent bg-accent/10;
+  }
+  .sidebar-section-title {
+    @apply px-4 pt-4 pb-1 text-xs font-semibold uppercase tracking-wider text-text-dim;
+  }
+  .accordion-header {
+    @apply w-full flex items-center justify-between px-4 py-3 bg-card border border-border rounded-md
+           text-text text-sm font-medium cursor-pointer transition-colors hover:bg-card/80;
+  }
+  .accordion-focus-ring {
+    @apply border-accent shadow-[0_0_0_1px_var(--color-accent)];
+  }
+  .tag-badge {
+    @apply text-[10px] px-1.5 py-0.5 rounded bg-accent/20 text-accent font-medium;
+  }
+  .sidebar-toggle {
+    @apply w-8 h-8 bg-card/80 backdrop-blur-sm border border-border rounded-lg shadow-lg shadow-black/30
+           flex items-center justify-center text-text-muted hover:text-text hover:bg-card hover:scale-110
+           cursor-pointer transition-all duration-200;
+  }
+  .sidebar-footer {
+    @apply border-t border-border px-2 py-3;
+  }
+  .sidebar-divider {
+    @apply border-t border-border my-2;
+  }
+  .vaults-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+  .vaults-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .vaults-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .vaults-scroll::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+  }
+  .vaults-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-dim);
+  }
+}
+
+
+[data-mode="white"] {
+  --color-surface: #fafafa;
+  --color-card: #ffffff;
+  --color-border: #e5e5e5;
+  --color-text: #171717;
+  --color-text-muted: #525252;
+  --color-text-dim: #a3a3a3;
+  --color-accent: #4f46e5;
+  --color-accent-hover: #4338ca;
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, sans-serif;
+}
