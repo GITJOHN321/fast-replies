@@ -8,11 +8,11 @@ import * as service from '../application/vaultService'
 type VaultContextType = {
   vaults: Vault[]
   tags: Tag[]
-  addVault: (title: string) => void
+  addVault: (vaultname: string) => void
   addNote: (vaultId: string) => void
-  updateNote: (vaultId: string, noteId: string, description: string) => void
-  updateNoteTitle: (vaultId: string, noteId: string, title: string) => void
-  updateVaultTitle: (vaultId: string, title: string) => void
+  updateNote: (vaultId: string, noteId: string, content: string) => void
+  updateNoteTitle: (vaultId: string, noteId: string, notename: string) => void
+  updateVaultTitle: (vaultId: string, vaultname: string) => void
   deleteNotes: (vaultId: string, noteIds: string[]) => void
   deleteVault: (vaultId: string) => void
   addTag: (name: string) => void
@@ -55,20 +55,20 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     }
   }, [repo])
 
-  const addVault = (title: string) =>
-    persist(service.addVault(vaults, title))
+  const addVault = (vaultname: string) =>
+    persist(service.addVault(vaults, vaultname))
 
   const addNote = (vaultId: string) =>
     persist(service.addNote(vaults, vaultId))
 
-  const updateNote = (vaultId: string, noteId: string, description: string) =>
-    persist(service.updateNote(vaults, vaultId, noteId, description))
+  const updateNote = (vaultId: string, noteId: string, content: string) =>
+    persist(service.updateNote(vaults, vaultId, noteId, content))
 
-  const updateNoteTitle = (vaultId: string, noteId: string, title: string) =>
-    persist(service.updateNoteTitle(vaults, vaultId, noteId, title))
+  const updateNoteTitle = (vaultId: string, noteId: string, notename: string) =>
+    persist(service.updateNoteName(vaults, vaultId, noteId, notename))
 
-  const updateVaultTitle = (vaultId: string, title: string) =>
-    persist(service.updateVaultTitle(vaults, vaultId, title))
+  const updateVaultTitle = (vaultId: string, vaultname: string) =>
+    persist(service.updateVaultName(vaults, vaultId, vaultname))
 
   const deleteNotes = (vaultId: string, noteIds: string[]) =>
     persist(service.deleteNotes(vaults, vaultId, noteIds))

@@ -41,12 +41,12 @@ function TagsPage() {
             <div className="space-y-1">
               {tags.map((tag: Tag) => (
                 <div
-                  key={tag.id}
+                  key={tag.id_tag}
                   className="flex items-center justify-between px-3 py-2 bg-surface border border-border rounded-md"
                 >
-                  <span className="text-text text-sm">{tag.name}</span>
+                  <span className="text-text text-sm">{tag.tagname}</span>
                   <button
-                    onClick={() => { if (window.confirm(`Delete tag "${tag.name}"?`)) removeTag(tag.id) }}
+                    onClick={() => { if (window.confirm(`Delete tag "${tag.tagname}"?`)) removeTag(tag.id_tag) }}
                     className="text-text-dim hover:text-red-400 text-xs transition-colors cursor-pointer"
                   >
                     ✕

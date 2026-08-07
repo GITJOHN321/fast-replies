@@ -4,6 +4,9 @@ interface User {
   id_user: string
   username: string
   email: string
+  status: string
+  type: string
+  configuration: Record<string, unknown>
 }
 
 interface UserContextType {
@@ -15,7 +18,7 @@ interface UserContextType {
   logout: () => Promise<void>
 }
 
-const PREDEFINED_USER = { id_user: '1', username: 'admin', email: 'admin@example.com' }
+const PREDEFINED_USER = { id_user: '1', username: 'admin', email: 'admin@example.com', status: 'active', type: 'user', configuration: {} }
 const PREDEFINED_PASSWORD = 'admin123'
 const SESSION_KEY = 'notes_session'
 

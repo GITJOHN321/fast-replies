@@ -1,10 +1,10 @@
 import type { Vault, Note, Tag } from '../domain/entities'
 import type { ImportPayload } from './importVault'
 
-export function addVault(vaults: Vault[], title: string): Vault[] {
+export function addVault(vaults: Vault[], vaultname: string): Vault[] {
   const newVault: Vault = {
-    id: crypto.randomUUID(),
-    title,
+    id_vault: crypto.randomUUID(),
+    vaultname,
     notes: [],
   }
   return [...vaults, newVault]
@@ -12,63 +12,69 @@ export function addVault(vaults: Vault[], title: string): Vault[] {
 
 export function addNote(vaults: Vault[], vaultId: string): Vault[] {
   return vaults.map((vault) => {
-    if (vault.id !== vaultId) return vault
+    if (vault.id_vault !== vaultId) return vault
     const newNote: Note = {
-      id: crypto.randomUUID(),
-      title: `Generic Note ${vault.notes.length + 1}`,
-      description: '',
+      id_note: crypto.randomUUID(),
+      notename: `Note ${vault.notes.length + 1}`,
+      content: '',
+      image_url: [],
+      pin_up: false,
+      position: vault.notes.length,
+      color: '#ffffff',
+      status: 'active',
+      favorite: false,
       tags: [],
     }
     return { ...vault, notes: [...vault.notes, newNote] }
   })
 }
 
-export function updateNote(vaults: Vault[], vaultId: string, noteId: string, description: string): Vault[] {
+export function updateNote(vaults: Vault[], vaultId: string, noteId: string, content: string): Vault[] {
   return vaults.map((vault) => {
-    if (vault.id !== vaultId) return vault
+    if (vault.id_vault !== vaultId) return vault
     return {
       ...vault,
       notes: vault.notes.map((n) =>
-        n.id === noteId ? { ...n, description } : n,
+        n.id_note === noteId ? { ...n, content } : n,
       ),
     }
   })
 }
 
-export function updateNoteTitle(vaults: Vault[], vaultId: string, noteId: string, title: string): Vault[] {
+export function updateNoteName(vaults: Vault[], vaultId: string, noteId: string, notename: string): Vault[] {
   return vaults.map((vault) => {
-    if (vault.id !== vaultId) return vault
+    if (vault.id_vault !== vaultId) return vault
     return {
       ...vault,
       notes: vault.notes.map((n) =>
-        n.id === noteId ? { ...n, title } : n,
+        n.id_note === noteId ? { ...n, notename } : n,
       ),
     }
   })
 }
 
-export function updateVaultTitle(vaults: Vault[], vaultId: string, title: string): Vault[] {
-  return vaults.map((v) => (v.id === vaultId ? { ...v, title } : v))
+export function updateVaultName(vaults: Vault[], vaultId: string, vaultname: string): Vault[] {
+  return vaults.map((v) => (v.id_vault === vaultId ? { ...v, vaultname } : v))
 }
 
 export function deleteNotes(vaults: Vault[], vaultId: string, noteIds: string[]): Vault[] {
   return vaults.map((vault) => {
-    if (vault.id !== vaultId) return vault
-    return { ...vault, notes: vault.notes.filter((n) => !noteIds.includes(n.id)) }
+    if (vault.id_vault !== vaultId) return vault
+    return { ...vault, notes: vault.notes.filter((n) => !noteIds.includes(n.id_note)) }
   })
 }
 
 export function deleteVault(vaults: Vault[], vaultId: string): Vault[] {
-  return vaults.filter((v) => v.id !== vaultId)
+  return vaults.filter((v) => v.id_vault !== vaultId)
 }
 
-export function addTag(tags: Tag[], name: string): Tag[] {
-  return [...tags, { id: crypto.randomUUID(), name }]
+export function addTag(tags: Tag[], tagname: string, color?: string): Tag[] {
+  return [...tags, { id_tag: crypto.randomUUID(), tagname, color: color ?? '#6366f1' }]
 }
 
 export function removeTag(vaults: Vault[], tags: Tag[], tagId: string): { vaults: Vault[]; tags: Tag[] } {
   return {
-    tags: tags.filter((t) => t.id !== tagId),
+    tags: tags.filter((t) => t.id_tag !== tagId),
     vaults: vaults.map((vault) => ({
       ...vault,
       notes: vault.notes.map((n) => ({
@@ -81,11 +87,11 @@ export function removeTag(vaults: Vault[], tags: Tag[], tagId: string): { vaults
 
 export function toggleNoteTag(vaults: Vault[], vaultId: string, noteId: string, tagId: string): Vault[] {
   return vaults.map((vault) => {
-    if (vault.id !== vaultId) return vault
+    if (vault.id_vault !== vaultId) return vault
     return {
       ...vault,
       notes: vault.notes.map((n) => {
-        if (n.id !== noteId) return n
+        if (n.id_note !== noteId) return n
         const has = n.tags.includes(tagId)
         return {
           ...n,
@@ -101,13 +107,13 @@ function resolveTags(tags: Tag[], noteTags: string[]): { resolved: Tag[]; tagNam
   const resolved = [...tags]
 
   for (const name of noteTags) {
-    const existing = resolved.find((t) => t.name === name)
+    const existing = resolved.find((t) => t.tagname === name)
     if (existing) {
-      tagNameToId[name] = existing.id
+      tagNameToId[name] = existing.id_tag
     } else {
       const id = crypto.randomUUID()
       tagNameToId[name] = id
-      resolved.push({ id, name })
+      resolved.push({ id_tag: id, tagname: name, color: '#6366f1' })
     }
   }
 
@@ -124,12 +130,18 @@ export function importVault(
 
   const vaultId = crypto.randomUUID()
   const newVault: Vault = {
-    id: vaultId,
-    title: data.title,
+    id_vault: vaultId,
+    vaultname: data.title,
     notes: data.notes.map((n) => ({
-      id: crypto.randomUUID(),
-      title: n.title,
-      description: n.description,
+      id_note: crypto.randomUUID(),
+      notename: n.title,
+      content: n.description,
+      image_url: [],
+      pin_up: false,
+      position: 0,
+      color: '#ffffff',
+      status: 'active',
+      favorite: false,
       tags: n.tags.map((t) => tagNameToId[t]),
     })),
   }
@@ -147,16 +159,22 @@ export function importNotesIntoVault(
   const { resolved, tagNameToId } = resolveTags(tags, allTagNames)
 
   const newNotes: Note[] = data.notes.map((n) => ({
-    id: crypto.randomUUID(),
-    title: n.title,
-    description: n.description,
+    id_note: crypto.randomUUID(),
+    notename: n.title,
+    content: n.description,
+    image_url: [],
+    pin_up: false,
+    position: 0,
+    color: '#ffffff',
+    status: 'active',
+    favorite: false,
     tags: n.tags.map((t) => tagNameToId[t]),
   }))
 
   return {
     tags: resolved,
     vaults: vaults.map((v) =>
-      v.id === vaultId ? { ...v, notes: [...v.notes, ...newNotes] } : v,
+      v.id_vault === vaultId ? { ...v, notes: [...v.notes, ...newNotes] } : v,
     ),
   }
 }

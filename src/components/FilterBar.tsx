@@ -32,18 +32,18 @@ export function FilterBar({
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {tags.map((t) => {
-            const active = filterTags.includes(t.id)
+            const active = filterTags.includes(t.id_tag)
             return (
               <button
-                key={t.id}
-                onClick={() => onToggleTag(t.id)}
+                key={t.id_tag}
+                onClick={() => onToggleTag(t.id_tag)}
                 className={`text-xs px-2 py-1 rounded border transition-colors cursor-pointer ${
                   active
                     ? 'bg-accent/20 border-accent text-accent'
                     : 'bg-card border-border text-text-dim hover:text-text'
                 }`}
               >
-                {t.name}
+                {t.tagname}
               </button>
             )
           })}

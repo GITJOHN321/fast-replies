@@ -30,15 +30,15 @@ function VaultPage() {
   const importFileRef = useRef<HTMLInputElement>(null)
   const searchRef = useRef<HTMLInputElement>(null)
 
-  const vault = vaults.find((v) => v.id === vaultId)
+  const vault = vaults.find((v) => v.id_vault === vaultId)
 
   const filtered = useMemo(
     () =>
       (vault?.notes ?? []).filter((note) => {
         const matchSearch =
           !search ||
-          note.title.toLowerCase().includes(search.toLowerCase()) ||
-          note.description.toLowerCase().includes(search.toLowerCase())
+          note.notename.toLowerCase().includes(search.toLowerCase()) ||
+          note.content.toLowerCase().includes(search.toLowerCase())
 
         const matchTags =
           filterTags.length === 0 ||
@@ -82,7 +82,7 @@ function VaultPage() {
   }
 
   const handleAddNote = () => {
-    addNote(vault.id)
+    addNote(vault.id_vault)
     setExpandedId(null)
   }
 
@@ -101,7 +101,7 @@ function VaultPage() {
     if (selectedIds.size === filtered.length) {
       setSelectedIds(new Set())
     } else {
-      setSelectedIds(new Set(filtered.map((n) => n.id)))
+      setSelectedIds(new Set(filtered.map((n) => n.id_note)))
     }
   }
 
@@ -109,20 +109,20 @@ function VaultPage() {
     const count = selectedIds.size
     if (count === 0) return
     if (window.confirm(`Are you sure you want to delete ${count} note${count > 1 ? 's' : ''}?`)) {
-      deleteNotes(vault.id, Array.from(selectedIds))
+      deleteNotes(vault.id_vault_vault, Array.from(selectedIds))
       setSelectedIds(new Set())
     }
   }
 
   const startEditVaultTitle = () => {
-    setVaultEditValue(vault.title)
+    setVaultEditValue(vault.vaultname)
     setEditingVaultTitle(true)
   }
 
   const commitVaultTitle = () => {
     const trimmed = vaultEditValue.trim()
-    if (trimmed && trimmed !== vault.title) {
-      updateVaultTitle(vault.id, trimmed)
+    if (trimmed && trimmed !== vault.vaultname) {
+      updateVaultTitle(vault.id_vault_vault, trimmed)
     }
     setEditingVaultTitle(false)
   }
@@ -137,7 +137,7 @@ function VaultPage() {
       try {
         const json = JSON.parse(reader.result as string)
         const payload = parseImportFile(json)
-        importNotesIntoVault(vault.id, payload)
+        importNotesIntoVault(vault.id_vault, payload)
       } catch {
         // silently ignore invalid files
       }
@@ -173,7 +173,7 @@ function VaultPage() {
               onCommitTitle={commitVaultTitle}
               onCancelEdit={() => setEditingVaultTitle(false)}
               onToggleMenu={() => setMenuOpen((p) => !p)}
-              onDeleteVault={() => { if (window.confirm(`Delete vault "${vault.title}" and all its notes?`)) { deleteVault(vault.id); navigate('/') } }}
+              onDeleteVault={() => { if (window.confirm(`Delete vault "${vault.vaultname}" and all its notes?`)) { deleteVault(vault.id_vault); navigate('/') } }}
               onImportFile={handleImportFile}
             />
 
@@ -183,7 +183,7 @@ function VaultPage() {
               onDeleteSelected={handleDeleteSelected}
               onExportSelected={() =>
                 exportSelectedNotes(
-                  vault.notes.filter((n) => selectedIds.has(n.id)),
+                  vault.notes.filter((n) => selectedIds.has(n.id_note)),
                   vault,
                   tags,
                 )
@@ -226,23 +226,23 @@ function VaultPage() {
           <div className="space-y-2">
             {filtered.map((note) => (
               <NoteAccordion
-                key={note.id}
+                key={note.id_note}
                 note={note}
                 tags={tags}
-                expanded={expandedId === note.id}
-                selected={selectedIds.has(note.id)}
-                focused={focusedNavId === note.id}
-                editingTitleFromNav={editingNavTitleId === note.id}
+                expanded={expandedId === note.id_note}
+                selected={selectedIds.has(note.id_note)}
+                focused={focusedNavId === note.id_note}
+                editingTitleFromNav={editingNavTitleId === note.id_note}
                 onToggle={toggleNote}
                 onSelectChange={toggleSelect}
                 onDescriptionChange={(noteId, description) =>
-                  updateNote(vault.id, noteId, description)
+                  updateNote(vault.id_vault, noteId, description)
                 }
                 onTitleChange={(noteId, title) =>
-                  updateNoteTitle(vault.id, noteId, title)
+                  updateNoteTitle(vault.id_vault, noteId, title)
                 }
                 onToggleTag={(noteId, tagId) =>
-                  toggleNoteTag(vault.id, noteId, tagId)
+                  toggleNoteTag(vault.id_vault, noteId, tagId)
                 }
               />
             ))}

@@ -76,12 +76,12 @@ export function ImportExportPanel({ vaults, tags, onImport }: Props) {
           )}
           {vaults.map((vault) => (
             <button
-              key={vault.id}
+              key={vault.id_vault}
               onClick={() => handleExport(vault)}
               className="w-full text-left px-3 py-2 bg-surface border border-border rounded-md text-sm text-text
                          hover:bg-card/80 transition-colors cursor-pointer"
             >
-              {vault.title}
+              {vault.vaultname}
               <span className="text-text-dim ml-2">({vault.notes.length} notes)</span>
             </button>
           ))}

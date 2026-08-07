@@ -43,7 +43,7 @@ export function useVaultKeyboardNav(
 
       if (e.key === 'ArrowDown') {
         e.preventDefault()
-        const idx = filtered.findIndex((n) => n.id === focusedNavId)
+        const idx = filtered.findIndex((n) => n.id_note === focusedNavId)
         if (idx < filtered.length - 1) {
           const nextId = filtered[idx + 1].id
           setExpandedId(nextId)
@@ -54,7 +54,7 @@ export function useVaultKeyboardNav(
 
       if (e.key === 'ArrowUp') {
         e.preventDefault()
-        const idx = filtered.findIndex((n) => n.id === focusedNavId)
+        const idx = filtered.findIndex((n) => n.id_note === focusedNavId)
         if (idx > 0) {
           const prevId = filtered[idx - 1].id
           setExpandedId(prevId)
@@ -71,10 +71,10 @@ export function useVaultKeyboardNav(
       }
 
       if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
-        const note = filtered.find((n) => n.id === focusedNavId)
-        if (note?.description) {
+        const note = filtered.find((n) => n.id_note === focusedNavId)
+        if (note?.content) {
           e.preventDefault()
-          navigator.clipboard.writeText(note.description)
+          navigator.clipboard.writeText(note.content)
         }
         return
       }

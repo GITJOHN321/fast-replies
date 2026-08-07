@@ -42,7 +42,7 @@ export function VaultHeader({
         />
       ) : (
         <>
-          <h1 className="page-title flex-1 mb-0">{vault.title}</h1>
+          <h1 className="page-title flex-1 mb-0">{vault.vaultname}</h1>
           <div ref={menuRef} className="relative">
             <button
               onClick={onToggleMenu}

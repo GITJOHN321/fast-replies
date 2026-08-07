@@ -13,8 +13,8 @@ type Props = {
   editingTitleFromNav?: boolean
   onToggle: (id: string) => void
   onSelectChange?: (id: string, selected: boolean) => void
-  onDescriptionChange: (id: string, description: string) => void
-  onTitleChange?: (noteId: string, title: string) => void
+  onDescriptionChange: (id: string, content: string) => void
+  onTitleChange?: (noteId: string, notename: string) => void
   onToggleTag?: (noteId: string, tagId: string) => void
 }
 
@@ -28,18 +28,16 @@ export function NoteAccordion({ note, tags = [], expanded, selected, focused, ed
   const { resize } = useAutoResize(textareaRef)
   const { copied, copy } = useCopyButton()
   const { click: handleDblClick } = useDoubleClick(
-    () => onToggle(note.id),
-    () => { setEditValue(note.title); setEditingTitle(true) }
+    () => onToggle(note.id_note),
+    () => { setEditValue(note.notename); setEditingTitle(true) }
   )
 
   const noteTagObjects = useMemo(
-    () => tags.filter((t) => note.tags.includes(t.id)),
+    () => tags.filter((t) => note.tags.includes(t.id_tag)),
     [tags, note.tags]
   )
 
-  useEffect(() => {
-    resize()
-  }, [note.description, expanded, resize])
+  useEffect(() => { resize() }, [note.content, expanded, resize])
 
   useEffect(() => {
     if (editingTitle && titleInputRef.current) {
@@ -56,19 +54,17 @@ export function NoteAccordion({ note, tags = [], expanded, selected, focused, ed
 
   useEffect(() => {
     if (editingTitleFromNav) {
-      setEditValue(note.title)
+      setEditValue(note.notename)
       setEditingTitle(true)
     }
-  }, [editingTitleFromNav, note.title])
+  }, [editingTitleFromNav, note.notename])
 
-  const focusTextarea = () => {
-    setTimeout(() => textareaRef.current?.focus(), 0)
-  }
+  const focusTextarea = () => setTimeout(() => textareaRef.current?.focus(), 0)
 
   const commitTitle = () => {
     const trimmed = editValue.trim()
-    if (trimmed && trimmed !== note.title && onTitleChange) {
-      onTitleChange(note.id, trimmed)
+    if (trimmed && trimmed !== note.notename && onTitleChange) {
+      onTitleChange(note.id_note, trimmed)
     }
     setEditingTitle(false)
     focusTextarea()
@@ -76,23 +72,20 @@ export function NoteAccordion({ note, tags = [], expanded, selected, focused, ed
 
   const handleHeaderClick = () => {
     if (editingTitle) return
-    if (!expanded) {
-      onToggle(note.id)
-      return
-    }
+    if (!expanded) { onToggle(note.id_note); return }
     handleDblClick()
   }
 
   const handleCopy = (e: { stopPropagation: () => void }) => {
     e.stopPropagation()
-    copy(note.description)
+    copy(note.content)
   }
 
   const handleCopyKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       e.stopPropagation()
-      copy(note.description)
+      copy(note.content)
     }
   }
 
@@ -106,7 +99,7 @@ export function NoteAccordion({ note, tags = [], expanded, selected, focused, ed
           <input
             type="checkbox"
             checked={!!selected}
-            onChange={(e) => onSelectChange(note.id, e.target.checked)}
+            onChange={(e) => onSelectChange(note.id_note, e.target.checked)}
             onClick={(e) => e.stopPropagation()}
             className="shrink-0 accent-accent cursor-pointer"
           />
@@ -127,7 +120,7 @@ export function NoteAccordion({ note, tags = [], expanded, selected, focused, ed
               className="flex-1 min-w-0 bg-transparent text-text outline-none border-b border-accent text-center"
             />
           ) : (
-            <span className="truncate text-center w-full">{note.title}</span>
+            <span className="truncate text-center w-full">{note.notename}</span>
           )}
         </div>
         <span className="relative shrink-0">
@@ -137,11 +130,9 @@ export function NoteAccordion({ note, tags = [], expanded, selected, focused, ed
             role="button"
             tabIndex={0}
             className="absolute right-full mr-1 text-text-dim hover:text-text transition-colors cursor-pointer"
-            title="Copy description"
+            title="Copy content"
           >
-            {copied ? (
-              '✓'
-            ) : (
+            {copied ? '✓' : (
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
@@ -154,18 +145,11 @@ export function NoteAccordion({ note, tags = [], expanded, selected, focused, ed
 
       <div className="px-4 py-2 flex gap-1.5 flex-wrap">
         {noteTagObjects.map((t) => (
-          <span
-            key={t.id}
-            className="tag-badge"
-          >
-            {t.name}
-          </span>
+          <span key={t.id_tag} className="tag-badge">{t.tagname}</span>
         ))}
       </div>
 
-      <div
-        className={`transition-all duration-300 grid ${expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
-      >
+      <div className={`transition-all duration-300 grid ${expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
         <div className="overflow-hidden">
           {expanded && onToggleTag && (
             <div className="px-4 pt-3 pb-2 border-t border-border">
@@ -179,18 +163,18 @@ export function NoteAccordion({ note, tags = [], expanded, selected, focused, ed
               {showTagPicker && (
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {tags.map((t) => {
-                    const active = note.tags.includes(t.id)
+                    const active = note.tags.includes(t.id_tag)
                     return (
                       <button
-                        key={t.id}
-                        onClick={() => onToggleTag(note.id, t.id)}
+                        key={t.id_tag}
+                        onClick={() => onToggleTag!(note.id_note, t.id_tag)}
                         className={`text-xs px-2 py-1 rounded border transition-colors cursor-pointer ${
                           active
                             ? 'bg-accent/20 border-accent text-accent'
                             : 'bg-card border-border text-text-dim hover:text-text'
                         }`}
                       >
-                        {t.name}
+                        {t.tagname}
                       </button>
                     )
                   })}
@@ -204,11 +188,8 @@ export function NoteAccordion({ note, tags = [], expanded, selected, focused, ed
 
           <textarea
             ref={textareaRef}
-            value={note.description}
-            onChange={(e) => {
-              onDescriptionChange(note.id, e.target.value)
-              resize()
-            }}
+            value={note.content}
+            onChange={(e) => { onDescriptionChange(note.id_note, e.target.value); resize() }}
             onPaste={() => setTimeout(resize, 0)}
             placeholder="Write a description..."
             rows={1}

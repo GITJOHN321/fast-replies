@@ -63,14 +63,14 @@ export function Sidebar() {
                 const idx = topLinks.length + i
                 return (
                   <NavLink
-                    key={vault.id}
-                    to={`/vault/${vault.id}`}
+                    key={vault.id_vault}
+                    to={`/vault/${vault.id_vault}`}
                     tabIndex={-1}
                     className={({ isActive }) =>
                       `sidebar-link ${isActive ? 'sidebar-link-active' : 'hover:bg-card/80'} ${focusedIdx === idx ? 'ring-2 ring-accent' : ''}`
                     }
                   >
-                    {vault.title}
+                    {vault.vaultname}
                   </NavLink>
                 )
               })}
